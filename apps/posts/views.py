@@ -7,12 +7,20 @@ from .models import Post
 
 
 class PostViewSet(ModelViewSet):
+    """[summary]
+
+    Args:
+        ModelViewSet ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     permission_classes = [
         IsAuthenticated,
     ]
 
-    @action(methods=['POST', ], detail=False)
-    def likes(self, request):
+    @action(methods=['POST', ], url_path="(?P<pk>[^/.]+)/likes", detail=False)
+    def likes(self, request, pk):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.partial_update(serializer.validated_data['likes'])

@@ -3,11 +3,28 @@ from .models import Post
 
 
 class GetUserMixin:
+    """[summary]
+    """
     def get_user_from_request(self):
         return getattr(self.context.get("request"), "user", None)
 
 
 class PostSerializer(GetUserMixin, serializers.ModelSerializer):
+    """[summary]
+
+    Args:
+        GetUserMixin ([type]): [description]
+        serializers ([type]): [description]
+
+    Raises:
+        serializers.ValidationError: [description]
+        serializers.ValidationError: [description]
+        serializers.ValidationError: [description]
+        serializers.ValidationError: [description]
+
+    Returns:
+        [type]: [description]
+    """
     user = serializers.PrimaryKeyRelatedField(required=False, read_only=True)
     likes = serializers.PrimaryKeyRelatedField(many=True, required=False, read_only=True)
     likes_count = serializers.SerializerMethodField()
@@ -62,6 +79,15 @@ class PostSerializer(GetUserMixin, serializers.ModelSerializer):
 
 
 class PostListSerializer(GetUserMixin, serializers.ModelSerializer):
+    """[summary]
+
+    Args:
+        GetUserMixin ([type]): [description]
+        serializers ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
     likes_count = serializers.SerializerMethodField()
 
     class Meta:
@@ -81,6 +107,18 @@ class PostListSerializer(GetUserMixin, serializers.ModelSerializer):
 
 
 class PostLikeSerializer(GetUserMixin, serializers.ModelSerializer):
+    """[summary]
+
+    Args:
+        GetUserMixin ([type]): [description]
+        serializers ([type]): [description]
+
+    Raises:
+        serializers.ValidationError: [description]
+
+    Returns:
+        [type]: [description]
+    """
     likes = serializers.PrimaryKeyRelatedField(required=False, read_only=True)
     likes_count = serializers.SerializerMethodField()
 
@@ -95,7 +133,7 @@ class PostLikeSerializer(GetUserMixin, serializers.ModelSerializer):
     def get_likes_count(obj):
         return obj.likes.count()
 
-    def update(self, instance):
+    def likes(self, instance):
         like_for_change = self.get_user_from_request()
         if not like_for_change:
             raise serializers.ValidationError("Not found.")

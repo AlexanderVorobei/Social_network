@@ -18,10 +18,12 @@ import debug_toolbar
 from rest_framework_swagger.views import get_swagger_view
 from .settings import DEBUG
 
+schema_view = get_swagger_view(title='Social Network API')
+
 urlpatterns = [
     path("api/v1/post/", include("apps.posts.urls", namespace="posts")),
     path("api/v1/auth/", include("apps.accounts.urls", namespace="auth")),
-    path("", get_swagger_view(), name="swagger")
+    path("docs", schema_view),
 ]
 
 if DEBUG:
