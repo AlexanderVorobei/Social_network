@@ -9,6 +9,7 @@ python = "^3.9"
 Django = "^4.0.2"
 django-debug-toolbar = "^3.2.4"
 djangorestframework = "^3.13.1"
+djangorestframework-jwt = "^1.11.0"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^4.0.1"
