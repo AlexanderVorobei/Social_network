@@ -1,8 +1,8 @@
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.decorators import action
 
-from .seralizers import PostListSerializer, PostSerializer
-
+from .serializers import PostListSerializer, PostSerializer, PostLikeSerializer
 from .models import Post
 
 
@@ -11,8 +11,19 @@ class PostViewSet(ModelViewSet):
         IsAuthenticated,
     ]
 
+    @action(methods=['POST', ], detail=False)
+    def likes(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.partial_update(serializer.validated_data['likes'])
+
     def get_queryset(self):
         return Post.objects.all()
 
     def get_serializer_class(self):
-        return PostListSerializer if self.action == "list" else PostSerializer
+        if self.action == "list":
+            return PostListSerializer
+        elif self.action == "likes":
+            return PostLikeSerializer
+        else:
+            return PostSerializer
