@@ -63,15 +63,7 @@ class PostSerializer(GetUserMixin, serializers.ModelSerializer):
 
 
 class PostListSerializer(GetUserMixin, serializers.ModelSerializer):
-    """[summary]
 
-    Args:
-        GetUserMixin ([type]): [description]
-        serializers ([type]): [description]
-
-    Returns:
-        [type]: [description]
-    """
     likes_count = serializers.SerializerMethodField()
 
     class Meta:
@@ -105,13 +97,6 @@ class PostLikeSerializer(GetUserMixin, serializers.ModelSerializer):
     def get_likes_count(obj):
         return obj.likes.count()
 
-    def get_likes(self, obj):
-        if self.get_user_from_request() not in obj.likes:
-            obj.likes.add(self.get_user_from_request())
-        else:
-            obj.likes.remove(self.get_user_from_request())
-            obj.save()
-        return obj.likes
 
     def update(self, instance, validated_data):
         if not self.get_user_from_request():
