@@ -3,28 +3,12 @@ from .models import Post
 
 
 class GetUserMixin:
-    """[summary]
-    """
+
     def get_user_from_request(self):
         return getattr(self.context.get("request"), "user", None)
 
 
 class PostSerializer(GetUserMixin, serializers.ModelSerializer):
-    """[summary]
-
-    Args:
-        GetUserMixin ([type]): [description]
-        serializers ([type]): [description]
-
-    Raises:
-        serializers.ValidationError: [description]
-        serializers.ValidationError: [description]
-        serializers.ValidationError: [description]
-        serializers.ValidationError: [description]
-
-    Returns:
-        [type]: [description]
-    """
     user = serializers.PrimaryKeyRelatedField(required=False, read_only=True)
     likes = serializers.PrimaryKeyRelatedField(many=True, required=False, read_only=True)
     likes_count = serializers.SerializerMethodField()
@@ -107,19 +91,7 @@ class PostListSerializer(GetUserMixin, serializers.ModelSerializer):
 
 
 class PostLikeSerializer(GetUserMixin, serializers.ModelSerializer):
-    """[summary]
-
-    Args:
-        GetUserMixin ([type]): [description]
-        serializers ([type]): [description]
-
-    Raises:
-        serializers.ValidationError: [description]
-
-    Returns:
-        [type]: [description]
-    """
-    likes = serializers.PrimaryKeyRelatedField(required=False, read_only=True)
+    likes = serializers.PrimaryKeyRelatedField(many=True, required=False, read_only=True)
     likes_count = serializers.SerializerMethodField()
 
     class Meta:
@@ -133,12 +105,20 @@ class PostLikeSerializer(GetUserMixin, serializers.ModelSerializer):
     def get_likes_count(obj):
         return obj.likes.count()
 
-    def likes(self, instance):
-        like_for_change = self.get_user_from_request()
-        if not like_for_change:
-            raise serializers.ValidationError("Not found.")
-        if like_for_change in instance.likes:
-            instance.likes.remove(like_for_change)
+    def get_likes(self, obj):
+        if self.get_user_from_request() not in obj.likes:
+            obj.likes.add(self.get_user_from_request())
         else:
-            instance.likes.add(like_for_change)
+            obj.likes.remove(self.get_user_from_request())
+            obj.save()
+        return obj.likes
+
+    def update(self, instance, validated_data):
+        if not self.get_user_from_request():
+            raise serializers.ValidationError("Your can't like this post")
+        likes_for_update = self.get_user_from_request()
+        if likes_for_update in instance.likes.all():
+            instance.likes.remove(likes_for_update)
+        else:
+            instance.likes.add(likes_for_update)
         return instance
