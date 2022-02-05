@@ -21,7 +21,7 @@ from .settings import DEBUG
 
 urlpatterns = [
     path("api/v1/post/", include("apps.posts.urls", namespace="posts")),
-    path("api/v1/auth/", include("apps.accounts.urls", namespace="auth")),
+    path("api/v1/account/", include("apps.accounts.urls", namespace="accounts")),
     path('docs/', include_docs_urls(title='Social Network API', public=False)),
 ]
 
