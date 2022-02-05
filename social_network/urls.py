@@ -15,15 +15,14 @@ Including another URLconf
 """
 from django.urls import path, include
 import debug_toolbar
-from rest_framework_swagger.views import get_swagger_view
+from rest_framework.documentation import include_docs_urls
 from .settings import DEBUG
 
-schema_view = get_swagger_view(title='Social Network API')
 
 urlpatterns = [
     path("api/v1/post/", include("apps.posts.urls", namespace="posts")),
     path("api/v1/auth/", include("apps.accounts.urls", namespace="auth")),
-    path("docs", schema_view),
+    path('docs/', include_docs_urls(title='Social Network API', public=False)),
 ]
 
 if DEBUG:
