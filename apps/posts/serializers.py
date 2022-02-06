@@ -44,8 +44,11 @@ class PostSerializer(GetUserMixin, serializers.ModelSerializer):
         body_data = validated_data.pop("body", "")
         if not title_data and not body_data:
             return instance
-        instance.title = title_data
-        instance.body = body_data
+        if title_data:
+            instance.title = title_data
+        if body_data:
+            instance.body = body_data
+        instance.save()
         return instance
 
     def destroy(self, instance):
@@ -66,7 +69,6 @@ class PostSerializer(GetUserMixin, serializers.ModelSerializer):
 
 
 class PostListSerializer(GetUserMixin, serializers.ModelSerializer):
-
     likes_count = serializers.SerializerMethodField()
 
     class Meta:
@@ -98,7 +100,6 @@ class PostLikeSerializer(GetUserMixin, serializers.ModelSerializer):
         fields = (
             "likes",
             "likes_count",
-            "updated_at",
         )
 
     @staticmethod
