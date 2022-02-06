@@ -1,8 +1,13 @@
 from rest_framework.permissions import IsAuthenticated
+from django.core.exceptions import ImproperlyConfigured
 from rest_framework.decorators import action
 from rest_framework import viewsets
 
-from .serializers import PostListSerializer, PostSerializer, PostLikeSerializer
+from .serializers import (
+    PostListSerializer,
+    PostSerializer,
+    PostLikeSerializer,
+)
 from .models import Post
 
 
@@ -11,6 +16,11 @@ class PostViewSet(viewsets.ModelViewSet):
     permission_classes = [
         IsAuthenticated,
     ]
+    serializer_class = PostSerializer
+    serializer_classes = {
+        "list": PostListSerializer,
+        "likes": PostLikeSerializer,
+    }
 
     @action(
         methods=[
@@ -26,9 +36,8 @@ class PostViewSet(viewsets.ModelViewSet):
         return Post.objects.all()
 
     def get_serializer_class(self):
-        if self.action == "list":
-            return PostListSerializer
-        elif self.action == "likes":
-            return PostLikeSerializer
-        else:
-            return PostSerializer
+        if not isinstance(self.serializer_classes, dict):
+            raise ImproperlyConfigured("serializer_classes should be a dict mapping.")
+        if self.action in self.serializer_classes.keys():
+            return self.serializer_classes[self.action]
+        return super().get_serializer_class()

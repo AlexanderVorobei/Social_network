@@ -34,10 +34,6 @@ class AuthUserSerializer(serializers.ModelSerializer):
         read_only_fields = ("id", "is_active", "is_staff")
 
 
-class EmptySerializer(serializers.Serializer):
-    pass
-
-
 class UserRegisterSerializer(serializers.ModelSerializer):
     """
     A user serializer for registering the user
@@ -45,7 +41,14 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("id", "username", "email", "password", "first_name", "last_name")
+        fields = (
+            "id",
+            "username",
+            "email",
+            "password",
+            "first_name",
+            "last_name",
+        )
 
     def validate_email(self, value):
         user = User.objects.filter(email=value)
@@ -70,3 +73,7 @@ class PasswordChangeSerializer(serializers.Serializer):
     def validate_new_password(self, value):
         password_validation.validate_password(value)
         return value
+
+
+class EmptySerializer(serializers.Serializer):
+    pass

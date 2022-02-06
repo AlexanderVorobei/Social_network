@@ -1,0 +1,36 @@
+version: '3.9'
+
+services:
+
+  db:
+    image: postgres:12
+    restart: always
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+
+    ports:
+      - 127.0.0.1:${LOCAL_DB_PORT}:54321
+
+  app:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env
+    environment:
+      DEBUG: 'true'
+    ports:
+      - 127.0.0.1:9191:${LOCAL_API_PORT}
+    command: poetry run python3 manage.py runserver --host=0.0.0.0 --port=${LOCAL_API_PORT}
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+
+volumes:
+  db_data:
+  app:

@@ -15,6 +15,8 @@ coreapi = "^2.3.3"
 Pygments = "^2.11.2"
 Markdown = "^3.3.6"
 drf-yasg = "^1.20.0"
+dj-database-url = "^0.5.0"
+psycopg2 = "^2.9.3"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^4.0.1"

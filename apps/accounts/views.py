@@ -6,21 +6,24 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .utils import create_user_account
-from . import serializers
-
-
-User = get_user_model()
+from .serializers import (
+    UserLoginSerializer,
+    UserRegisterSerializer,
+    PasswordChangeSerializer,
+    AuthUserSerializer,
+    EmptySerializer,
+)
 
 
 class AuthViewSet(viewsets.GenericViewSet, TokenObtainPairView):
     permission_classes = [
         AllowAny,
     ]
-    serializer_class = serializers.EmptySerializer
+    serializer_class = EmptySerializer
     serializer_classes = {
-        "login": serializers.UserLoginSerializer,
-        "register": serializers.UserRegisterSerializer,
-        "password_change": serializers.PasswordChangeSerializer,
+        "login": UserLoginSerializer,
+        "register": UserRegisterSerializer,
+        "password_change": PasswordChangeSerializer,
     }
 
     @action(
@@ -45,7 +48,7 @@ class AuthViewSet(viewsets.GenericViewSet, TokenObtainPairView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = create_user_account(**serializer.validated_data)
-        data = serializers.AuthUserSerializer(user).data
+        data = AuthUserSerializer(user).data
         return Response(data=data, status=status.HTTP_201_CREATED)
 
     @action(
