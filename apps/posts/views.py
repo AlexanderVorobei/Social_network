@@ -24,13 +24,13 @@ class PostViewSet(viewsets.ModelViewSet):
 
     @action(
         methods=[
-            "PUT",
+            "PATCH",
         ],
         url_path="(?P<pk>[^/.]+)/likes",
         detail=False,
     )
     def likes(self, request, *args, **kwargs):
-        return super().update(request, *args, **kwargs)
+        return super().partial_update(request, *args, **kwargs)
 
     def get_queryset(self):
         return Post.objects.all()

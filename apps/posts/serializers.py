@@ -48,24 +48,15 @@ class PostSerializer(GetUserMixin, serializers.ModelSerializer):
             instance.title = title_data
         if body_data:
             instance.body = body_data
-        instance.save()
-        return instance
+        post = super().update(instance=instance, validated_data=validated_data)
+        return post
 
     def destroy(self, instance):
         if instance.user != self.get_user_from_request():
             raise serializers.ValidationError("Your can't delete this post")
         else:
             instance.delete()
-            return instance
-
-    def validate_user(self, value):
-        user = self.get_user_from_request()
-        if not user:
-            raise serializers.ValidationError("Can't find user.")
-        if not self.instance:
-            if user not in value:
-                raise serializers.ValidationError("Current user must be author. ")
-        return value
+            return None
 
 
 class PostListSerializer(GetUserMixin, serializers.ModelSerializer):
