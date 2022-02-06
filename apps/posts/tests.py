@@ -31,7 +31,6 @@ class PostTestCase(APITestCase, UserMixin):
         self.post_detail_url = reverse("posts:post-detail", kwargs={"pk": 1})
         self.post_like_url = reverse("posts:post-likes", kwargs={"pk": 1})
 
-
         self.post_1 = Post.objects.create(
             user=self.user_1, title="test title", body="Very interesting post"
         )
@@ -50,26 +49,22 @@ class PostTestCase(APITestCase, UserMixin):
 
         result = self.client.post(
             self.post_list_url,
-            {"title": "test title",
-             "body": "Some interesting post"},
+            {"title": "test title", "body": "Some interesting post"},
         )
         self.assertEqual(result.status_code, 401)
 
         result = self.client.post(
             self.post_list_url,
-            {"title": "test title",
-             "body": "Some interesting post"},
+            {"title": "test title", "body": "Some interesting post"},
             HTTP_AUTHORIZATION=self._get_user_token(username=self.user_1.username),
         )
         self.assertEqual(result.status_code, 201)
 
         result = self.client.post(
             self.post_list_url,
-            {"title": "test title",
-             "body": "Some interesting post"},
+            {"title": "test title", "body": "Some interesting post"},
         )
         self.assertEqual(result.status_code, 401)
-
 
     def test_list_posts(self):
         """[Test getting list of posts]"""
@@ -96,7 +91,6 @@ class PostTestCase(APITestCase, UserMixin):
         self.assertEqual(data[0]["body"].get("body"), "Very interesting post")
 
         self.assertEqual(data[0]["likes_count"], 0)
-
 
     def test_update_post(self):
 

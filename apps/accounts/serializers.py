@@ -14,17 +14,23 @@ class UserLoginSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super(UserLoginSerializer, cls).get_token(user)
-        # Add custom claims
-        token['username'] = user.username
+        token["username"] = user.username
 
         return token
 
 
 class AuthUserSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = User
-        fields = ("id", "username", "email", "first_name", "last_name", "is_active", "is_staff")
+        fields = (
+            "id",
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "is_active",
+            "is_staff",
+        )
         read_only_fields = ("id", "is_active", "is_staff")
 
 
