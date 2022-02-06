@@ -3,14 +3,15 @@ from .models import Post
 
 
 class GetUserMixin:
-
     def get_user_from_request(self):
         return getattr(self.context.get("request"), "user", None)
 
 
 class PostSerializer(GetUserMixin, serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(required=False, read_only=True)
-    likes = serializers.PrimaryKeyRelatedField(many=True, required=False, read_only=True)
+    likes = serializers.PrimaryKeyRelatedField(
+        many=True, required=False, read_only=True
+    )
     likes_count = serializers.SerializerMethodField()
 
     class Meta:
@@ -21,7 +22,9 @@ class PostSerializer(GetUserMixin, serializers.ModelSerializer):
             "title",
             "body",
             "likes",
-            "likes_count"
+            "likes_count",
+            "created_at",
+            "updated_at",
         )
 
     @staticmethod
@@ -39,7 +42,7 @@ class PostSerializer(GetUserMixin, serializers.ModelSerializer):
             raise serializers.ValidationError("Your can't edit this post")
         title_data = validated_data.pop("title", "")
         body_data = validated_data.pop("body", "")
-        if not (title_data | body_data):
+        if not title_data and not body_data:
             return instance
         instance.title = title_data
         instance.body = body_data
@@ -75,6 +78,8 @@ class PostListSerializer(GetUserMixin, serializers.ModelSerializer):
             "body",
             "likes",
             "likes_count",
+            "created_at",
+            "updated_at",
         )
 
     @staticmethod
@@ -83,7 +88,9 @@ class PostListSerializer(GetUserMixin, serializers.ModelSerializer):
 
 
 class PostLikeSerializer(GetUserMixin, serializers.ModelSerializer):
-    likes = serializers.PrimaryKeyRelatedField(many=True, required=False, read_only=True)
+    likes = serializers.PrimaryKeyRelatedField(
+        many=True, required=False, read_only=True
+    )
     likes_count = serializers.SerializerMethodField()
 
     class Meta:
@@ -91,12 +98,12 @@ class PostLikeSerializer(GetUserMixin, serializers.ModelSerializer):
         fields = (
             "likes",
             "likes_count",
+            "updated_at",
         )
 
     @staticmethod
     def get_likes_count(obj):
         return obj.likes.count()
-
 
     def update(self, instance, validated_data):
         if not self.get_user_from_request():

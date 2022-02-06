@@ -1,6 +1,7 @@
-from rest_framework.reverse import reverse, reverse_lazy
+from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 from django.contrib.auth.models import User
+
 from apps.posts.models import Post
 
 
@@ -23,8 +24,6 @@ class PostTestCase(APITestCase, UserMixin):
         self.user_1 = self._create_user(user_number=1)
         self.user_2 = self._create_user(user_number=2)
         self.user_3 = self._create_user(user_number=3)
-        self.user_4 = self._create_user(user_number=4)
-        self.user_5 = self._create_user(user_number=5)
 
         self.login_url = reverse("auth:login")
         self.post_create_url = reverse("posts:post-create")
@@ -34,7 +33,7 @@ class PostTestCase(APITestCase, UserMixin):
 
 
         self.post_1 = Post.objects.create(
-            title="test title", body="Very interesting post"
+            user=self.user_1, title="test title", body="Very interesting post"
         )
 
     def _get_user_token(self, username="test", password="testPassword"):
@@ -53,6 +52,13 @@ class PostTestCase(APITestCase, UserMixin):
             self.post_list_url,
             {"title": "test title",
              "body": "Some interesting post"},
+        )
+        self.assertEqual(result.status_code, 401)
+
+        result = self.client.post(
+            self.post_list_url,
+            {"title": "test title",
+             "body": "Some interesting post"},
             HTTP_AUTHORIZATION=self._get_user_token(username=self.user_1.username),
         )
         self.assertEqual(result.status_code, 201)
@@ -65,7 +71,7 @@ class PostTestCase(APITestCase, UserMixin):
         self.assertEqual(result.status_code, 401)
 
 
-    def test_list_threads(self):
+    def test_list_posts(self):
         """[Test getting list of posts]"""
 
         result = self.client.get(self.post_list_url)
@@ -83,6 +89,8 @@ class PostTestCase(APITestCase, UserMixin):
 
         self.assertEqual(data[0]["id"], 1)
 
+        self.assertTrue(data[0]["title"])
+
         self.assertTrue(data[0]["body"])
 
         self.assertEqual(data[0]["body"].get("body"), "Very interesting post")
@@ -92,9 +100,7 @@ class PostTestCase(APITestCase, UserMixin):
 
     def test_update_post(self):
 
-        result = self.client.patch(
-            self.post_detail_url, HTTP_AUTHORIZATION=self._get_user_token()
-        )
+        result = self.client.patch(self.post_detail_url)
         self.assertEqual(result.status_code, 401)
 
         result = self.client.patch(
@@ -107,14 +113,12 @@ class PostTestCase(APITestCase, UserMixin):
             self.post_detail_url,
             HTTP_AUTHORIZATION=self._get_user_token(username=self.user_2.username),
         )
-        self.assertEqual(result.status_code, 200)
+        self.assertEqual(result.status_code, 404)
+
         result = self.client.get(
             self.post_detail_url,
             HTTP_AUTHORIZATION=self._get_user_token(username=self.user_1.username),
         )
-        data = result.json()
-
-        self.assertEqual(len(data), 0)
 
     def test_detail_thread(self):
 
@@ -130,7 +134,5 @@ class PostTestCase(APITestCase, UserMixin):
         )
         self.assertEqual(result.status_code, 404)
 
-        result = self.client.get(
-            self.post_detail_url, HTTP_AUTHORIZATION=self._get_user_token()
-        )
+        result = self.client.get(self.post_detail_url)
         self.assertEqual(result.status_code, 401)

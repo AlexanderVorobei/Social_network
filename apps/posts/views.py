@@ -1,26 +1,24 @@
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
-from rest_framework.response import Response
-from rest_framework import viewsets, status
+from rest_framework import viewsets
 
 from .serializers import PostListSerializer, PostSerializer, PostLikeSerializer
 from .models import Post
 
 
 class PostViewSet(viewsets.ModelViewSet):
-    """[summary]
 
-    Args:
-        ModelViewSet ([type]): [description]
-
-    Returns:
-        [type]: [description]
-    """
     permission_classes = [
         IsAuthenticated,
     ]
 
-    @action(methods=['PATCH', ], url_path="(?P<pk>[^/.]+)/likes", detail=False)
+    @action(
+        methods=[
+            "PUT",
+        ],
+        url_path="(?P<pk>[^/.]+)/likes",
+        detail=False,
+    )
     def likes(self, request, *args, **kwargs):
         return super().update(request, *args, **kwargs)
 

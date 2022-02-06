@@ -12,16 +12,20 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load dotenv file
+PATH_TO_DOT_ENV_FILE = os.path.join(BASE_DIR, ".env")
+load_dotenv(PATH_TO_DOT_ENV_FILE)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-r26*!5z&uam^&fg$a@r+fsm-646y0dd(0fx$(xoqf*k855!^et"
+SECRET_KEY = os.getenv("SECRET_KEY", "Ensure you set a secret key, this is important!")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -41,6 +45,7 @@ INSTALLED_APPS = [
     # Installed apps
     "rest_framework",
     "rest_framework_simplejwt",
+    "drf_yasg",
     # custom apps
     "apps.posts",
     "apps.accounts",
@@ -106,6 +111,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Authentication settings
+LOGIN_URL = "accounts:auth-login"
+LOGOUT_URL = "accounts:auth-logout"
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
@@ -123,24 +131,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-if DEBUG:
-
-    INTERNAL_IPS = ("127.0.0.1",)
-
-    MIDDLEWARE += ("debug_toolbar.middleware.DebugToolbarMiddleware",)
-
-    INSTALLED_APPS += ("debug_toolbar",)
-
-    DEBUG_TOOLBAR_CONFIG = {
-        "INTERCEPT_REDIRECTS": False,
-    }
-    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # Configuration for REST framework
 REST_FRAMEWORK = {
@@ -162,5 +158,19 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "PAGE_SIZE": 10,
-    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
+    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
 }
+
+
+if DEBUG:
+
+    INTERNAL_IPS = ("127.0.0.1",)
+
+    MIDDLEWARE += ("debug_toolbar.middleware.DebugToolbarMiddleware",)
+
+    INSTALLED_APPS += ("debug_toolbar",)
+
+    DEBUG_TOOLBAR_CONFIG = {
+        "INTERCEPT_REDIRECTS": False,
+    }
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
