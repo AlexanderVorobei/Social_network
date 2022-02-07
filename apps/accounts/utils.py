@@ -4,11 +4,7 @@ User = get_user_model()
 
 
 def create_user_account(
-    username: str,
-    password: str,
-    first_name: str = "",
-    last_name: str = "",
-    **extra_fields
+    username, password, first_name="", last_name="", **extra_fields
 ):
     user = User.objects.create_user(
         username=username,

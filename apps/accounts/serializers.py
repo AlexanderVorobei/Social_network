@@ -1,7 +1,3 @@
-from rest_framework_simplejwt.serializers import (
-    TokenObtainPairSerializer,
-    TokenRefreshSerializer,
-)
 from rest_framework import serializers
 from django.contrib.auth import get_user_model, password_validation
 from django.contrib.auth.models import BaseUserManager
@@ -50,35 +46,3 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     def validate_password(self, value):
         password_validation.validate_password(value)
         return value
-
-
-class PasswordChangeSerializer(serializers.Serializer):
-    current_password = serializers.CharField(write_only=True, required=True)
-    password = serializers.CharField(write_only=True, required=True)
-    password2 = serializers.CharField(write_only=True, required=True)
-
-    class Meta:
-        model = User
-        fields = ("current_password", "password", "password2")
-
-    def validate(self, attrs):
-        if attrs["password"] != attrs["password2"]:
-            raise serializers.ValidationError(
-                {"password": "Password fields didn't match."}
-            )
-
-        return attrs
-
-    def validate_current_password(self, value):
-        if not self.context["request"].user.check_password(value):
-            raise serializers.ValidationError("Current password does not match")
-        return value
-
-    def validate_password(self, value):
-        password_validation.validate_password(value)
-        return value
-
-    def update(self, instance, validated_data):
-        instance.set_password(validated_data["password"])
-        instance.save()
-        return instance

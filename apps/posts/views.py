@@ -23,13 +23,7 @@ class PostViewSet(viewsets.ModelViewSet):
         "likes": PostLikeSerializer,
     }
 
-    @action(
-        methods=[
-            "PATCH",
-        ],
-        url_path="(?P<pk>[^/.]+)/likes",
-        detail=False,
-    )
+    @action(methods=["PATCH"], url_path="(?P<pk>[^/.]+)/likes", detail=False)
     def likes(self, request, *args, **kwargs):
         """
         Update a model instance - add or remove like from user.
