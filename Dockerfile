@@ -1,20 +1,16 @@
-FROM python:3.9
+FROM python:3.9.2
 
 # set working directory
 WORKDIR /app
 
 # set environment varibles
-ENV PYTHONFAULTHANDLER 1
-ENV PYTHONUNBUFFERED 1
-ENV PYTHONHASHSEED random
-ENV PIP_NO_CACHE_DIR off
 ENV PIP_DISABLE_PIP_VERSION_CHECK on
+ENV POETRY_VIRTUALENVS_CREATE=false
 
 # install poetry
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
-ENV PATH="${PATH}:/root/.poetry/bin"
-RUN poetry self update
+RUN pip install poetry
+
 COPY poetry.lock .
 COPY pyproject.toml .
 
-RUN POETRY_VIRTUALENVS_CREATE=false poetry install --no-dev --no-interaction --no-ansi
+RUN poetry install --no-dev --no-interaction

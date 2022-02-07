@@ -1,4 +1,4 @@
-version: '3.9'
+version: '3'
 
 services:
 
@@ -13,19 +13,17 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
 
     ports:
-      - 127.0.0.1:${LOCAL_DB_PORT}:54321
+      - 127.0.0.1:${LOCAL_DB_PORT}:5432
 
   app:
     restart: always
-    build:
-      context: .
-      dockerfile: Dockerfile
-    env_file: .env
+    build: .
     environment:
-      DEBUG: 'true'
+      DEBUG: 'false'
+      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}"
     ports:
-      - 127.0.0.1:9191:${LOCAL_API_PORT}
-    command: poetry run python3 manage.py runserver --host=0.0.0.0 --port=${LOCAL_API_PORT}
+      - 127.0.0.1:${LOCAL_API_PORT}:8000
+    command: poetry run python3 manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/app
     depends_on:

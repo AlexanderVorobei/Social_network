@@ -3,6 +3,10 @@ from .models import Post
 
 
 class GetUserMixin:
+    """
+    Get user from request
+    """
+
     def get_user_from_request(self):
         return getattr(self.context.get("request"), "user", None)
 
