@@ -121,7 +121,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Authentication settings
 LOGIN_URL = "accounts:auth-login"
-LOGOUT_URL = "accounts:auth-logout"
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
